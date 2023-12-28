@@ -40,6 +40,7 @@ export class UserController {
     }
   }
 
+  @HttpCode(HttpStatus.OK)
   @Post('/login')
   async login(@Body() dto: LoginDto): Promise<ResponseDto<ILoginResponse>> {
     try {
