@@ -4,10 +4,14 @@ import { ILoginResponse, IUser } from './interface';
 import { Prisma } from '@prisma/client';
 import { Util } from '../general/util';
 import { LoginDto } from './dto';
+import { AuthService } from './auth.service';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly authService: AuthService,
+  ) {}
 
   async createUser(data: Prisma.UserCreateInput): Promise<IUser> {
     const userExists = await this.prismaService.user.findFirst({
@@ -49,6 +53,11 @@ export class UserService {
       throw new BadRequestException(`Invalid credentials.`);
     }
 
+    const token: string = this.authService.getToken({
+      userId: user.id,
+      email: user.email,
+    });
+
     return {
       user: {
         id: user.id,
@@ -57,7 +66,7 @@ export class UserService {
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
       },
-      token: '',
+      token,
     };
   }
 }

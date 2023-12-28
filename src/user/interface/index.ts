@@ -10,3 +10,8 @@ export interface ILoginResponse {
   token: string;
   user: IUser;
 }
+
+export interface IGetToken {
+  userId: number;
+  email: string;
+}
