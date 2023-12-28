@@ -1,13 +1,13 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { ICreateUser, IUser } from './interface';
-import { Prisma, User } from '@prisma/client';
+import { IUser } from './interface';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class UserService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async createUser(data: ICreateUser): Promise<IUser> {
+  async createUser(data: Prisma.UserCreateInput): Promise<IUser> {
     const userExists = await this.prismaService.user.findFirst({
       where: { email: data.email },
     });
@@ -23,6 +23,8 @@ export class UserService {
       id: user.id,
       name: user.name,
       email: user.email,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
     };
   }
 }
