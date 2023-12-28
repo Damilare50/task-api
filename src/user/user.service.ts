@@ -2,6 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { IUser } from './interface';
 import { Prisma } from '@prisma/client';
+import { Util } from '../general/util';
 
 @Injectable()
 export class UserService {
@@ -17,7 +18,12 @@ export class UserService {
         `User with email ${data.email} already exists.`,
       );
     }
-    const user = await this.prismaService.user.create({ data });
+
+    const hashedPass = await Util.hash(data.password);
+
+    const user = await this.prismaService.user.create({
+      data: { ...data, password: hashedPass },
+    });
 
     return {
       id: user.id,
