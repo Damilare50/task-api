@@ -1,8 +1,9 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { IUser } from './interface';
+import { ILoginResponse, IUser } from './interface';
 import { Prisma } from '@prisma/client';
 import { Util } from '../general/util';
+import { LoginDto } from './dto';
 
 @Injectable()
 export class UserService {
@@ -31,6 +32,32 @@ export class UserService {
       email: user.email,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
+    };
+  }
+
+  async login(data: LoginDto): Promise<ILoginResponse> {
+    const user = await this.prismaService.user.findFirst({
+      where: { email: data.email },
+    });
+
+    if (!user) {
+      throw new BadRequestException(`Invalid credentials.`);
+    }
+
+    const isPasswordValid = await Util.compare(data.password, user.password);
+    if (!isPasswordValid) {
+      throw new BadRequestException(`Invalid credentials.`);
+    }
+
+    return {
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt,
+      },
+      token: '',
     };
   }
 }

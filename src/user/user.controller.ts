@@ -8,9 +8,9 @@ import {
   Post,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import { CreateUserDto } from './dto';
+import { CreateUserDto, LoginDto } from './dto';
 import { ResponseDto } from '../general/dto';
-import { IUser } from './interface';
+import { ILoginResponse, IUser } from './interface';
 
 @Controller('user')
 export class UserController {
@@ -35,7 +35,29 @@ export class UserController {
 
       throw new HttpException(
         error.message || 'An unknown error occured',
-        error.status || HttpStatus.BAD_REQUEST,
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  @Post('/login')
+  async login(@Body() dto: LoginDto): Promise<ResponseDto<ILoginResponse>> {
+    try {
+      const response = await this.service.login(dto);
+
+      return {
+        statusCode: HttpStatus.OK,
+        data: response,
+        message: 'User login successfully',
+      };
+    } catch (error) {
+      this.logger.error(JSON.stringify(error));
+
+      if (error instanceof HttpException) throw error;
+
+      throw new HttpException(
+        error.message || 'An unknown error occured',
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
   }

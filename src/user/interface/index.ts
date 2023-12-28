@@ -5,3 +5,8 @@ export interface IUser {
   createdAt: Date;
   updatedAt: Date;
 }
+
+export interface ILoginResponse {
+  token: string;
+  user: IUser;
+}
