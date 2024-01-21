@@ -13,9 +13,9 @@ import { config } from 'node-config-ts';
       secret: config.JWT_SECRET,
       signOptions: {
         expiresIn: config.JWT_EXPIRY,
-        issuer: 'task-api',
+        issuer: 'taskmaster-api',
         algorithm: 'HS256',
-        subject: 'token',
+        subject: 'JWT Token',
       },
       verifyOptions: { algorithms: ['HS256'] },
     }),

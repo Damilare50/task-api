@@ -8,4 +8,8 @@ export class Util {
   static async compare(string: string, hash: string): Promise<boolean> {
     return await bcrypt.compare(string, hash);
   }
+
+  static getTokenFromAuth(auth: string) {
+    return auth.split(' ')[1];
+  }
 }
