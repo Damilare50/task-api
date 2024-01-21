@@ -1,0 +1,5 @@
+{
+    "PORT": 3000,
+    "JWT_EXPIRY": "@@JWT_EXPIRY",
+    "JWT_SECRET": "@@JWT_SECRET"
+}
