@@ -1,7 +1,7 @@
 import * as jwt from 'jsonwebtoken';
 
 export interface IUser {
-  id: number;
+  id: string;
   name: string;
   email: string;
   createdAt: Date;
@@ -14,7 +14,7 @@ export interface ILoginResponse {
 }
 
 export interface IGetToken {
-  userId: number;
+  userId: string;
   email: string;
 }
 
