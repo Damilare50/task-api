@@ -17,7 +17,6 @@ export class AuthService {
   verifyToken(token: string): IVerifyTokenResponse {
     try {
       const decodedJwt: IToken = this.jwtService.verify(token);
-      this.logger.log(decodedJwt);
 
       return {
         isValid: true,
