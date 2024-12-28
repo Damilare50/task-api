@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsBoolean,
   IsMongoId,
@@ -22,6 +22,23 @@ export class CreateTaskDto {
   @IsNotEmpty()
   @IsString()
   details: string;
+}
+
+export class UpdateTaskDto {
+  @ApiProperty({ description: 'task title' })
+  @IsOptional()
+  @IsString()
+  title?: string;
+
+  @ApiProperty({ description: 'task details' })
+  @IsOptional()
+  @IsString()
+  details?: string;
+
+  @ApiProperty({ description: 'task completion status' })
+  @IsOptional()
+  @IsBoolean()
+  completed?: boolean;
 }
 
 export class TaskDto {
@@ -48,17 +65,17 @@ export class TaskDto {
 }
 
 export class ListTaskFilterDto {
-  @ApiProperty({ description: 'task category id' })
+  @ApiPropertyOptional({ description: 'task category id' })
   @IsOptional()
   @IsMongoId()
   categoryId?: string;
 
-  @ApiProperty({ description: 'task title' })
+  @ApiPropertyOptional({ description: 'task title' })
   @IsOptional()
   @IsString()
   title?: string;
 
-  @ApiProperty({ description: 'task completion status' })
+  @ApiPropertyOptional({ description: 'task completion status' })
   @IsOptional()
   @IsBoolean()
   completed?: boolean;

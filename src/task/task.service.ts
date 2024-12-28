@@ -4,7 +4,12 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateTaskDto, ListTaskFilterDto, TaskDto } from './dto';
+import {
+  CreateTaskDto,
+  ListTaskFilterDto,
+  TaskDto,
+  UpdateTaskDto,
+} from './dto';
 import { User } from '@prisma/client';
 
 @Injectable()
@@ -110,6 +115,64 @@ export class TaskService {
       completed: task.completed,
       createdAt: task.createdAt,
       updatedAt: task.updatedAt,
+    };
+  }
+
+  async delete(id: string, user: User): Promise<void> {
+    const where = { userId: user.id, id };
+
+    const task = await this.prismaService.task.findUnique({
+      where,
+    });
+
+    if (!task) {
+      throw new NotFoundException('task not found');
+    }
+
+    await this.prismaService.task.delete({
+      where,
+    });
+  }
+
+  async update(id: string, data: UpdateTaskDto, user: User): Promise<TaskDto> {
+    const where = { userId: user.id, id };
+    const task = await this.prismaService.task.findUnique({
+      where,
+      include: { category: true },
+    });
+
+    if (!task) {
+      throw new NotFoundException('task not found');
+    }
+
+    const { title, details, completed } = data;
+    const updateData = {};
+
+    if (title) {
+      updateData['title'] = title;
+    }
+
+    if (details) {
+      updateData['details'] = details;
+    }
+
+    if (completed !== undefined) {
+      updateData['completed'] = completed;
+    }
+
+    const updatedTask = await this.prismaService.task.update({
+      where,
+      data: updateData,
+    });
+
+    return {
+      id: updatedTask.id,
+      title: updatedTask.title,
+      details: updatedTask.details,
+      category: task.category.name,
+      completed: updatedTask.completed,
+      createdAt: updatedTask.createdAt,
+      updatedAt: updatedTask.updatedAt,
     };
   }
 }
