@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { ILoginResponse, IUser } from './interface';
 import { Prisma } from '@prisma/client';
@@ -45,12 +49,12 @@ export class UserService {
     });
 
     if (!user) {
-      throw new BadRequestException(`Invalid credentials.`);
+      throw new UnauthorizedException(`invalid credentials.`);
     }
 
     const isPasswordValid = await Util.compare(data.password, user.password);
     if (!isPasswordValid) {
-      throw new BadRequestException(`Invalid credentials.`);
+      throw new UnauthorizedException(`invalid credentials.`);
     }
 
     const token: string = this.authService.getToken({
@@ -80,7 +84,7 @@ export class UserService {
     });
 
     if (!user) {
-      throw new BadRequestException(`User with ${payload.userId} not found.`);
+      throw new BadRequestException(`user with ${payload.userId} not found.`);
     }
 
     return {

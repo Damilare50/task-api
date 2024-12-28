@@ -20,6 +20,7 @@ import { AuthGuard } from '../general/guard/auth.guard';
 @Controller('user')
 export class UserController {
   private logger: Logger = new Logger(UserController.name);
+
   constructor(private readonly service: UserService) {}
 
   @HttpCode(HttpStatus.OK)
@@ -31,7 +32,7 @@ export class UserController {
       return {
         statusCode: HttpStatus.OK,
         data: response,
-        message: 'User created successfully',
+        message: 'user created successfully',
       };
     } catch (error) {
       this.logger.error(JSON.stringify(error));
@@ -39,7 +40,7 @@ export class UserController {
       if (error instanceof HttpException) throw error;
 
       throw new HttpException(
-        error.message || 'An unknown error occured',
+        error.message || 'an unknown error occured',
         error.status || HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
@@ -54,7 +55,7 @@ export class UserController {
       return {
         statusCode: HttpStatus.OK,
         data: response,
-        message: 'User login successfully',
+        message: 'user login successfully',
       };
     } catch (error) {
       this.logger.error(JSON.stringify(error));
@@ -62,7 +63,7 @@ export class UserController {
       if (error instanceof HttpException) throw error;
 
       throw new HttpException(
-        error.message || 'An unknown error occured',
+        error.message || 'an unknown error occured',
         error.status || HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
@@ -81,7 +82,7 @@ export class UserController {
       return {
         statusCode: HttpStatus.OK,
         data: response,
-        message: 'User retrieved successfully',
+        message: 'user retrieved successfully',
       };
     } catch (error) {
       this.logger.error(JSON.stringify(error));
@@ -89,7 +90,7 @@ export class UserController {
       if (error instanceof HttpException) throw error;
 
       throw new HttpException(
-        error.message || 'An unknown error occured',
+        error.message || 'an unknown error occured',
         error.status || HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
