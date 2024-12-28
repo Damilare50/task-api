@@ -48,6 +48,7 @@ export class TaskService {
       id: task.id,
       title: task.title,
       details: task.details,
+      completed: task.completed,
       category: category.name,
       createdAt: task.createdAt,
       updatedAt: task.updatedAt,
@@ -56,13 +57,17 @@ export class TaskService {
 
   async list(user: User, dto: ListTaskFilterDto): Promise<TaskDto[]> {
     const where = { userId: user.id };
-    const { categoryId, title } = dto;
+    const { categoryId, title, completed } = dto;
     if (categoryId) {
       where['categoryId'] = categoryId;
     }
 
     if (title) {
       where['title'] = { contains: title, mode: 'insensitive' };
+    }
+
+    if (completed !== undefined) {
+      where['completed'] = completed;
     }
 
     const tasks = await this.prismaService.task.findMany({
@@ -75,6 +80,7 @@ export class TaskService {
       title: task.title,
       details: task.details,
       category: task.category.name,
+      completed: task.completed,
       createdAt: task.createdAt,
       updatedAt: task.updatedAt,
     }));

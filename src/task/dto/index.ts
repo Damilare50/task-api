@@ -1,5 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsMongoId, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import {
+  IsBoolean,
+  IsMongoId,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 export class CreateTaskDto {
   @ApiProperty({ description: 'task category id' })
@@ -31,6 +37,9 @@ export class TaskDto {
   @ApiProperty({ description: 'task category' })
   category: string;
 
+  @ApiProperty({ description: 'task completion status' })
+  completed: boolean;
+
   @ApiProperty({ description: 'task created at' })
   createdAt: Date;
 
@@ -48,4 +57,9 @@ export class ListTaskFilterDto {
   @IsOptional()
   @IsString()
   title?: string;
+
+  @ApiProperty({ description: 'task completion status' })
+  @IsOptional()
+  @IsBoolean()
+  completed?: boolean;
 }
