@@ -5,6 +5,7 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  Patch,
   Post,
   Query,
   UseGuards,
@@ -133,6 +134,44 @@ export class TaskCategoryController {
         statusCode: HttpStatus.OK,
         data: response,
         message: 'task category fetched successfully',
+      };
+    } catch (error) {
+      this.logger.error(JSON.stringify(error));
+
+      if (error instanceof HttpException) throw error;
+
+      throw new HttpException(
+        error.message || 'an unknown error occured',
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  @Patch(':id')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'update task category by id' })
+  @ApiOkResponse({
+    description: 'task category updated successfully',
+    type: ResponseDto<TaskCategoryDto>,
+  })
+  @ApiNotFoundResponse({ description: 'task category not found' })
+  @ApiBadRequestResponse({ description: 'bad request' })
+  @ApiUnauthorizedResponse({ description: 'unauthorized' })
+  @ApiInternalServerErrorResponse({ description: 'an unknown error occured' })
+  @Auth(true)
+  @UseGuards(AuthGuard)
+  async update(
+    @AuthUser() user: User,
+    @Param() id: MongoIdDto,
+    @Body() dto: CreateTaskCategoryDto,
+  ): Promise<ResponseDto<TaskCategoryDto>> {
+    try {
+      const response = await this.service.update(id.id, dto, user);
+
+      return {
+        statusCode: HttpStatus.OK,
+        data: response,
+        message: 'task category updated successfully',
       };
     } catch (error) {
       this.logger.error(JSON.stringify(error));

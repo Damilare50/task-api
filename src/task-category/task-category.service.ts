@@ -93,4 +93,32 @@ export class TaskCategoryService {
       updatedAt: category.updatedAt,
     };
   }
+
+  async update(
+    id: string,
+    data: CreateTaskCategoryDto,
+    user: User,
+  ): Promise<TaskCategoryDto> {
+    const category = await this.prisma.taskCategory.findFirst({
+      where: { id, userId: user.id },
+    });
+
+    if (!category) {
+      throw new NotFoundException('task category not found');
+    }
+
+    const updatedCategory = await this.prisma.taskCategory.update({
+      where: { id },
+      data: {
+        name: data.name,
+      },
+    });
+
+    return {
+      id: updatedCategory.id,
+      name: updatedCategory.name,
+      createdAt: updatedCategory.createdAt,
+      updatedAt: updatedCategory.updatedAt,
+    };
+  }
 }
