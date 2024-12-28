@@ -14,6 +14,7 @@ import {
   ApiBadRequestResponse,
   ApiBearerAuth,
   ApiInternalServerErrorResponse,
+  ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
@@ -25,7 +26,7 @@ import { User as AuthUser } from '../general/decorators/user.decorator';
 import { AuthGuard } from '../general/guard/auth.guard';
 import { User } from '@prisma/client';
 import { CreateTaskDto, ListTaskFilterDto, TaskDto } from './dto';
-import { ResponseDto } from '../general/dto';
+import { MongoIdDto, ResponseDto } from '../general/dto';
 
 @Controller('task')
 @ApiTags('task')
@@ -91,6 +92,42 @@ export class TaskController {
 
       return {
         message: 'tasks fetched successfully',
+        data: response,
+        statusCode: HttpStatus.OK,
+      };
+    } catch (error) {
+      this.logger.error(JSON.stringify(error));
+
+      if (error instanceof HttpException) throw error;
+
+      throw new HttpException(
+        error.message || 'an unknown error occured',
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  @Get(':id')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'get task by id' })
+  @ApiOkResponse({
+    description: 'task fetched successfully',
+    type: ResponseDto<TaskDto>,
+  })
+  @ApiNotFoundResponse({ description: 'not found' })
+  @ApiUnauthorizedResponse({ description: 'unauthorized' })
+  @ApiInternalServerErrorResponse({ description: 'an unknown error occured' })
+  @Auth(true)
+  @UseGuards(AuthGuard)
+  async getById(
+    @AuthUser() user: User,
+    @Query() id: MongoIdDto,
+  ): Promise<ResponseDto<TaskDto>> {
+    try {
+      const response = await this.service.getById(id.id, user);
+
+      return {
+        message: 'task fetched successfully',
         data: response,
         statusCode: HttpStatus.OK,
       };

@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateTaskDto, ListTaskFilterDto, TaskDto } from './dto';
 import { User } from '@prisma/client';
@@ -84,5 +88,28 @@ export class TaskService {
       createdAt: task.createdAt,
       updatedAt: task.updatedAt,
     }));
+  }
+
+  async getById(id: string, user: User): Promise<TaskDto> {
+    const where = { userId: user.id, id };
+
+    const task = await this.prismaService.task.findUnique({
+      where,
+      include: { category: true },
+    });
+
+    if (!task) {
+      throw new NotFoundException('task not found');
+    }
+
+    return {
+      id: task.id,
+      title: task.title,
+      details: task.details,
+      category: task.category.name,
+      completed: task.completed,
+      createdAt: task.createdAt,
+      updatedAt: task.updatedAt,
+    };
   }
 }
