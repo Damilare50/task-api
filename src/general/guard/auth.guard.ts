@@ -10,12 +10,14 @@ import { Auth } from '../decorators/auth.decorator';
 import { Util } from '../util';
 import { AuthService } from '../../user/auth.service';
 import { IVerifyTokenResponse } from '../../user/interface';
+import { UserService } from '../../user/user.service';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
   constructor(
     private readonly reflector: Reflector,
     private readonly authService: AuthService,
+    private readonly userService: UserService,
   ) {}
 
   canActivate(
@@ -40,6 +42,12 @@ export class AuthGuard implements CanActivate {
 
     if (!decodeResponse.isValid)
       throw new UnauthorizedException('user nor authorized!');
+
+    const { userId, email } = decodeResponse.payload;
+    const user = this.userService.getUserById(userId);
+    if (!user) throw new UnauthorizedException('user not authorized!');
+
+    request.user = user;
 
     return true;
   }

@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { ILoginResponse, IUser } from './interface';
-import { Prisma } from '@prisma/client';
+import { Prisma, User } from '@prisma/client';
 import { Util } from '../general/util';
 import { LoginDto } from './dto';
 import { AuthService } from './auth.service';
@@ -94,5 +94,13 @@ export class UserService {
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
     };
+  }
+
+  async getUserById(id: string): Promise<User> {
+    const user = await this.prismaService.user.findFirst({
+      where: { id },
+    });
+
+    return user;
   }
 }

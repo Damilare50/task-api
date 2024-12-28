@@ -5,6 +5,7 @@ import { IGetToken, IToken, IVerifyTokenResponse } from './interface';
 @Injectable()
 export class AuthService {
   private logger: Logger = new Logger(AuthService.name);
+
   constructor(private readonly jwtService: JwtService) {}
 
   getToken(data: IGetToken): string {
