@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import {
   CreateTaskCategoryDto,
   ListTaskCategoryFilterDto,
@@ -63,5 +67,30 @@ export class TaskCategoryService {
       createdAt: category.createdAt,
       updatedAt: category.updatedAt,
     }));
+  }
+
+  /**
+   * Retrieves a task category by its ID for a specific user.
+   *
+   * @param id - The ID of the task category to retrieve.
+   * @param user - The user object containing the user's ID.
+   * @returns A promise that resolves to a TaskCategoryDto object containing the task category details.
+   * @throws NotFoundException if the task category is not found.
+   */
+  async getById(id: string, user: User): Promise<TaskCategoryDto> {
+    const category = await this.prisma.taskCategory.findFirst({
+      where: { id, userId: user.id },
+    });
+
+    if (!category) {
+      throw new NotFoundException('task category not found');
+    }
+
+    return {
+      id: category.id,
+      name: category.name,
+      createdAt: category.createdAt,
+      updatedAt: category.updatedAt,
+    };
   }
 }

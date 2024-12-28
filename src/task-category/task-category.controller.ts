@@ -4,6 +4,7 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Param,
   Post,
   Query,
   UseGuards,
@@ -12,6 +13,7 @@ import {
   ApiBadRequestResponse,
   ApiBearerAuth,
   ApiInternalServerErrorResponse,
+  ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
@@ -20,9 +22,9 @@ import {
 import { TaskCategoryService } from './task-category.service';
 import { Auth } from '../general/decorators/auth.decorator';
 import { AuthGuard } from '../general/guard/auth.guard';
-import { User as UserDecorator } from '../general/decorators/user.decorator';
+import { User as AuthUser } from '../general/decorators/user.decorator';
 import { Task, User } from '@prisma/client';
-import { ResponseDto } from '../general/dto';
+import { MongoIdDto, ResponseDto } from '../general/dto';
 import { ListTaskCategoryFilterDto, TaskCategoryDto } from './dto';
 import { CreateTaskCategoryDto } from './dto';
 import { HttpException } from '@nestjs/common';
@@ -49,7 +51,7 @@ export class TaskCategoryController {
   @Auth(true)
   @UseGuards(AuthGuard)
   async create(
-    @UserDecorator() user: User,
+    @AuthUser() user: User,
     @Body() dto: CreateTaskCategoryDto,
   ): Promise<ResponseDto<TaskCategoryDto>> {
     try {
@@ -85,7 +87,7 @@ export class TaskCategoryController {
   @Auth(true)
   @UseGuards(AuthGuard)
   async list(
-    @UserDecorator() user: User,
+    @AuthUser() user: User,
     @Query() query: ListTaskCategoryFilterDto,
   ): Promise<ResponseDto<TaskCategoryDto[]>> {
     try {
@@ -95,6 +97,42 @@ export class TaskCategoryController {
         statusCode: HttpStatus.OK,
         data: response,
         message: 'task categories fetched successfully',
+      };
+    } catch (error) {
+      this.logger.error(JSON.stringify(error));
+
+      if (error instanceof HttpException) throw error;
+
+      throw new HttpException(
+        error.message || 'an unknown error occured',
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  @Get(':id')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'get task category by id' })
+  @ApiOkResponse({
+    description: 'task category fetched successfully',
+    type: ResponseDto<TaskCategoryDto>,
+  })
+  @ApiNotFoundResponse({ description: 'task category not found' })
+  @ApiUnauthorizedResponse({ description: 'unauthorized' })
+  @ApiInternalServerErrorResponse({ description: 'an unknown error occured' })
+  @Auth(true)
+  @UseGuards(AuthGuard)
+  async getById(
+    @AuthUser() user: User,
+    @Param() id: MongoIdDto,
+  ): Promise<ResponseDto<TaskCategoryDto>> {
+    try {
+      const response = await this.service.getById(id.id, user);
+
+      return {
+        statusCode: HttpStatus.OK,
+        data: response,
+        message: 'task category fetched successfully',
       };
     } catch (error) {
       this.logger.error(JSON.stringify(error));

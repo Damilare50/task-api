@@ -1,5 +1,6 @@
 import { HttpStatus } from '@nestjs/common';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsMongoId, IsNotEmpty } from 'class-validator';
 
 export class ErrorResponse {
   @ApiProperty({ description: 'error field' })
@@ -21,4 +22,11 @@ export class ResponseDto<T> {
 
   @ApiPropertyOptional({ description: 'response errors' })
   errors?: ErrorResponse[];
+}
+
+export class MongoIdDto {
+  @ApiProperty({ description: 'id' })
+  @IsNotEmpty()
+  @IsMongoId()
+  id: string;
 }
