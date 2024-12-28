@@ -9,7 +9,7 @@ import { Observable } from 'rxjs';
 import { Auth } from '../decorators/auth.decorator';
 import { Util } from '../util';
 import { AuthService } from '../../user/auth.service';
-import { IVerifyTokenResponse } from 'src/user/interface';
+import { IVerifyTokenResponse } from '../../user/interface';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -31,14 +31,15 @@ export class AuthGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
     const auth: string = request.headers.authorization;
 
-    if (!auth) throw new UnauthorizedException('User not authorized!');
+    if (!auth) throw new UnauthorizedException('user not authorized!');
 
     const token: string = Util.getTokenFromAuth(auth);
 
     const decodeResponse: IVerifyTokenResponse =
       this.authService.verifyToken(token);
+
     if (!decodeResponse.isValid)
-      throw new UnauthorizedException('User nor authorized!');
+      throw new UnauthorizedException('user nor authorized!');
 
     return true;
   }

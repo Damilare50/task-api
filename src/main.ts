@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
-import { validationPipeFactory } from './general/factory';
+import { validationPipeFactory as exceptionFactory } from './general/factory';
 import { config } from 'node-config-ts';
 
 async function bootstrap() {
@@ -10,7 +10,8 @@ async function bootstrap() {
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
-      exceptionFactory: validationPipeFactory,
+      exceptionFactory,
+      whitelist: true,
     }),
   );
 

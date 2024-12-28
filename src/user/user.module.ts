@@ -1,14 +1,13 @@
-import { Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
-import { PrismaModule } from '../prisma/prisma.module';
 import { AuthService } from './auth.service';
 import { JwtModule } from '@nestjs/jwt';
 import { config } from 'node-config-ts';
 
+@Global()
 @Module({
   imports: [
-    PrismaModule,
     JwtModule.register({
       secret: config.JWT_SECRET,
       signOptions: {

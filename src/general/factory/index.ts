@@ -14,7 +14,10 @@ export function validationPipeFactory(err: ValidationError[]) {
   );
 }
 
-function parseError(err: ValidationError[], res: ErrorResponse[] = []) {
+function parseError(
+  err: ValidationError[],
+  res: ErrorResponse[] = [],
+): ErrorResponse[] {
   err.forEach((el: ValidationError) => {
     if (el?.children?.length === 0) {
       res.push({
