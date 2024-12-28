@@ -1,5 +1,5 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class CreateTaskCategoryDto {
   @ApiProperty({ description: 'category name' })
@@ -20,4 +20,11 @@ export class TaskCategoryDto {
 
   @ApiProperty({ description: 'updated at' })
   updatedAt: Date;
+}
+
+export class ListTaskCategoryFilterDto {
+  @ApiPropertyOptional({ description: 'category name' })
+  @IsOptional()
+  @IsString()
+  name?: string;
 }
