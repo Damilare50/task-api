@@ -121,4 +121,18 @@ export class TaskCategoryService {
       updatedAt: updatedCategory.updatedAt,
     };
   }
+
+  async delete(id: string, user: User): Promise<void> {
+    const category = await this.prisma.taskCategory.findFirst({
+      where: { id, userId: user.id },
+    });
+
+    if (!category) {
+      throw new NotFoundException('task category not found');
+    }
+
+    await this.prisma.taskCategory.delete({
+      where: { id },
+    });
+  }
 }

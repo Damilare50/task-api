@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
@@ -24,7 +25,7 @@ import { TaskCategoryService } from './task-category.service';
 import { Auth } from '../general/decorators/auth.decorator';
 import { AuthGuard } from '../general/guard/auth.guard';
 import { User as AuthUser } from '../general/decorators/user.decorator';
-import { Task, User } from '@prisma/client';
+import { User } from '@prisma/client';
 import { MongoIdDto, ResponseDto } from '../general/dto';
 import { ListTaskCategoryFilterDto, TaskCategoryDto } from './dto';
 import { CreateTaskCategoryDto } from './dto';
@@ -152,7 +153,7 @@ export class TaskCategoryController {
   @ApiOperation({ summary: 'update task category by id' })
   @ApiOkResponse({
     description: 'task category updated successfully',
-    type: ResponseDto<TaskCategoryDto>,
+    type: ResponseDto<void>,
   })
   @ApiNotFoundResponse({ description: 'task category not found' })
   @ApiBadRequestResponse({ description: 'bad request' })
@@ -172,6 +173,42 @@ export class TaskCategoryController {
         statusCode: HttpStatus.OK,
         data: response,
         message: 'task category updated successfully',
+      };
+    } catch (error) {
+      this.logger.error(JSON.stringify(error));
+
+      if (error instanceof HttpException) throw error;
+
+      throw new HttpException(
+        error.message || 'an unknown error occured',
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  @Delete(':id')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'delete task category by id' })
+  @ApiOkResponse({
+    description: 'task category deleted successfully',
+    type: ResponseDto<TaskCategoryDto>,
+  })
+  @ApiNotFoundResponse({ description: 'task category not found' })
+  @ApiUnauthorizedResponse({ description: 'unauthorized' })
+  @ApiInternalServerErrorResponse({ description: 'an unknown error occured' })
+  @Auth(true)
+  @UseGuards(AuthGuard)
+  async delete(
+    @AuthUser() user: User,
+    @Param() id: MongoIdDto,
+  ): Promise<ResponseDto<void>> {
+    try {
+      const response = await this.service.delete(id.id, user);
+
+      return {
+        statusCode: HttpStatus.OK,
+        data: response,
+        message: 'task category deleted successfully',
       };
     } catch (error) {
       this.logger.error(JSON.stringify(error));
