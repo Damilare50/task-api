@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateTaskDto, TaskDto } from './dto';
+import { CreateTaskDto, ListTaskFilterDto, TaskDto } from './dto';
 import { User } from '@prisma/client';
 
 @Injectable()
@@ -52,5 +52,31 @@ export class TaskService {
       createdAt: task.createdAt,
       updatedAt: task.updatedAt,
     };
+  }
+
+  async list(user: User, dto: ListTaskFilterDto): Promise<TaskDto[]> {
+    const where = { userId: user.id };
+    const { categoryId, title } = dto;
+    if (categoryId) {
+      where['categoryId'] = categoryId;
+    }
+
+    if (title) {
+      where['title'] = { contains: title, mode: 'insensitive' };
+    }
+
+    const tasks = await this.prismaService.task.findMany({
+      where,
+      include: { category: true },
+    });
+
+    return tasks.map((task) => ({
+      id: task.id,
+      title: task.title,
+      details: task.details,
+      category: task.category.name,
+      createdAt: task.createdAt,
+      updatedAt: task.updatedAt,
+    }));
   }
 }

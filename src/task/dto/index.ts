@@ -37,3 +37,15 @@ export class TaskDto {
   @ApiProperty({ description: 'task updated at' })
   updatedAt: Date;
 }
+
+export class ListTaskFilterDto {
+  @ApiProperty({ description: 'task category id' })
+  @IsOptional()
+  @IsMongoId()
+  categoryId?: string;
+
+  @ApiProperty({ description: 'task title' })
+  @IsOptional()
+  @IsString()
+  title?: string;
+}
