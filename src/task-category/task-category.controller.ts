@@ -38,6 +38,7 @@ export class TaskCategoryController {
 
   @Post()
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'create task category' })
   @ApiOkResponse({
     description: 'category created successfully',
     type: ResponseDto<TaskCategoryDto>,
