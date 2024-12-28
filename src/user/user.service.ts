@@ -34,6 +34,13 @@ export class UserService {
       data: { ...data, password: hashedPass },
     });
 
+    await this.prismaService.taskCategory.create({
+      data: {
+        name: 'default',
+        userId: user.id,
+      },
+    });
+
     return {
       id: user.id,
       name: user.name,

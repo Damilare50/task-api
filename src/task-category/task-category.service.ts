@@ -131,6 +131,10 @@ export class TaskCategoryService {
       throw new NotFoundException('task category not found');
     }
 
+    if (category.name === 'default') {
+      throw new BadRequestException('default category cannot be deleted');
+    }
+
     await this.prisma.taskCategory.delete({
       where: { id },
     });

@@ -1,9 +1,10 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsNotEmpty, IsNotIn, IsOptional, IsString } from 'class-validator';
 
 export class CreateTaskCategoryDto {
   @ApiProperty({ description: 'category name' })
   @IsNotEmpty()
+  @IsNotIn(['default'])
   @IsString()
   name: string;
 }
