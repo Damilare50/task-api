@@ -74,28 +74,6 @@ export class UserService {
     };
   }
 
-  async getUser(auth: string): Promise<IUser> {
-    const token: string = Util.getTokenFromAuth(auth);
-
-    const { payload } = this.authService.verifyToken(token);
-
-    const user = await this.prismaService.user.findFirst({
-      where: { id: payload.userId },
-    });
-
-    if (!user) {
-      throw new BadRequestException(`user with ${payload.userId} not found.`);
-    }
-
-    return {
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      createdAt: user.createdAt,
-      updatedAt: user.updatedAt,
-    };
-  }
-
   async getUserById(id: string): Promise<User> {
     const user = await this.prismaService.user.findFirst({
       where: { id },
